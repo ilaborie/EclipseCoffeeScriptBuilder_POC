@@ -10,7 +10,8 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Project Extension
+ * Project Extension.
+ * Provide helpers methods on project (nature, builder)
  */
 public final class ProjectExtension {
 
