@@ -46,26 +46,22 @@ public class CoffeeScriptBuilder extends IncrementalProjectBuilder {
 	@SuppressWarnings("rawtypes")
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
-		IResourceDelta delta = null;
-		boolean fullBuild = (kind == FULL_BUILD) 
-				|| ((delta = this.getDelta(this.getProject())) == null);
+		IResourceDelta delta = this.getDelta(this.getProject());
+		boolean fullBuild = (kind == FULL_BUILD) || (delta == null);
 
 		if (fullBuild) {
 			// Full Build
-			this.getProject().accept(resources -> {
-				compile(resources, monitor);
-				return true;
-			});
+			this.getProject().accept(resource -> compile(resource, monitor));
 		} else {
 			// Delta Build
 			delta.accept(d -> {
 				IResource resource = d.getResource();
 				switch (d.getKind()) {
-				case IResourceDelta.CHANGED:
-				case IResourceDelta.ADDED:
-					compile(resource, monitor);
-					break;
-				default: // do Nothing
+					case IResourceDelta.CHANGED:
+					case IResourceDelta.ADDED:
+						compile(resource, monitor);
+						break;
+					default: // do Nothing
 				}
 				return true;
 			});
@@ -96,7 +92,7 @@ public class CoffeeScriptBuilder extends IncrementalProjectBuilder {
 	 * @return the string
 	 * @throws CoreException
 	 */
-	void compile(IResource resource, IProgressMonitor monitor)
+	boolean compile(IResource resource, IProgressMonitor monitor)
 			throws CoreException {
 		if (resource instanceof IFile) {
 			IFile file = (IFile) resource;
@@ -125,6 +121,7 @@ public class CoffeeScriptBuilder extends IncrementalProjectBuilder {
 				throw new RuntimeException(e);
 			}
 		}
+		return true;
 	}
 
 	/**
